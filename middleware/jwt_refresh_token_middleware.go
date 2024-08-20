@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"dlms/models"
 	"dlms/services"
 	"fmt"
 	"net/http"
@@ -9,16 +10,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Authorize() gin.HandlerFunc {
+func JwtRefreshAuth() gin.HandlerFunc {
 	jwtService := services.JwtService()
 	return func(ctx *gin.Context) {
 
 		header := ctx.GetHeader("Authorization")
-		fmt.Printf("header: %s\n", header)
 		if header == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				`success`: false,
-				`message`: "authorization is required",
+			ctx.JSON(http.StatusUnauthorized, models.ResponseJson{
+				Success: false,
+				Message: "authorization is required",
 			})
 			ctx.Abort()
 			return
@@ -27,19 +27,19 @@ func Authorize() gin.HandlerFunc {
 		parts := strings.Split(header, " ")
 		fmt.Println(parts)
 		if len(parts) != 2 || strings.ToLower(parts[0]) == "Bearer" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				`success`: false,
-				`message`: "invalid token",
+			ctx.JSON(http.StatusUnauthorized, models.ResponseJson{
+				Success: false,
+				Message: "invalid token",
 			})
 			ctx.Abort()
 			return
 		}
 
-		claims, err := jwtService.VerifyToken(parts[1])
+		claims, err := jwtService.VerifyRefreshToken(parts[1])
 		if err != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				`success`: false,
-				`message`: err,
+			ctx.JSON(http.StatusUnauthorized, models.ResponseJson{
+				Success: false,
+				Message: err.Error(),
 			})
 			ctx.Abort()
 			return

@@ -2,8 +2,9 @@ package main
 
 import (
 	"dlms/configs"
+	"dlms/database"
+	"dlms/pkg/utils"
 	"dlms/routes"
-	"dlms/utils"
 	"fmt"
 	"os"
 
@@ -24,18 +25,18 @@ func main() {
 		panic(err)
 	}
 
-	// defer func() {
-	// 	if err := client.Disconnect(context.Background()); err != nil {
-	// 		panic(err)
-	// 	} else {
-	// 		fmt.Println("db disconnect")
-	// 	}
-	// }()
-
 	r := gin.Default()
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("eqfield", utils.CustomEqField)
+	}
+
+	if err := database.EnsureSeederRoleData(); err != nil {
+		panic("Err seeder role: " + err.Error())
+	}
+
+	if err := database.EnsureSeederAdminData(); err != nil {
+		panic("Err seeder account: " + err.Error())
 	}
 
 	routes.InitRoute(r)

@@ -21,11 +21,13 @@ type IAccountService interface {
 }
 type AccountServiceImpl struct {
 	userRepository repositories.IUserRepository
+	roleService    IRoleService
 }
 
 func AccountService() IAccountService {
 	return &AccountServiceImpl{
 		userRepository: repositories.UserRepository(),
+		roleService:    RoleService(),
 	}
 }
 
@@ -68,6 +70,11 @@ func (s *AccountServiceImpl) Register(body dtos.RegisterDto) error {
 		return err
 	}
 
+	role, err := s.roleService.FindByName("user")
+	if err != nil {
+		return err
+	}
+
 	if _, err := s.userRepository.Save(&models.User{
 		ID:        primitive.NewObjectID(),
 		Name:      body.Name,
@@ -75,8 +82,9 @@ func (s *AccountServiceImpl) Register(body dtos.RegisterDto) error {
 		Phone:     body.Phone,
 		Username:  body.Username,
 		Password:  string(passwordHashed),
+		Roles:     []primitive.ObjectID{role.ID},
 		CreatedAt: time.Now(),
-		UpdatedAT: time.Now(),
+		UpdatedAt: time.Now(),
 	}); err != nil {
 		return err
 	}

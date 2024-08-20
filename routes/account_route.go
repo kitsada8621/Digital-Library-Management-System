@@ -13,6 +13,6 @@ func InitAccountRoute(r *gin.RouterGroup) {
 
 	r.POST("/login", accountController.Login)
 	r.POST("/register", accountController.Register)
-	r.GET("/profile", middleware.Authorize(), accountController.Profile)
-	r.POST("/refresh/token", middleware.AuthorizeRefreshToken(), accountController.RefreshToken)
+	r.GET("/profile", middleware.JwtAuth(), accountController.Profile)
+	r.POST("/refresh/token", middleware.JwtRefreshAuth(), accountController.RefreshToken)
 }
