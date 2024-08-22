@@ -205,7 +205,12 @@ func (s *BorrowServiceImpl) UpdateBorrow(data dtos.BorrowDto, borrow models.Borr
 		return http.StatusOK, fmt.Errorf("Unable to edit")
 	}
 
-	book, err := s.bookRepository.FindOne(bson.M{"_id": borrow.BookId})
+	bookId, err := primitive.ObjectIDFromHex(data.BookId)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	book, err := s.bookRepository.FindOne(bson.M{"_id": bookId})
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

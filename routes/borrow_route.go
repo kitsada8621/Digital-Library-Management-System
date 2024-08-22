@@ -17,10 +17,10 @@ func InitBorrowRoute(r *gin.RouterGroup) {
 	borrowRoute.PUT("/update/:id", middleware.Role([]string{"user"}), borrowController.UpdateBorrow)
 	borrowRoute.PUT("/cancel/:id", middleware.Role([]string{"user"}), borrowController.CancelBorrowBook)
 	borrowRoute.GET("/history", middleware.Role([]string{"user"}), borrowController.BorrowingHistory)
+	borrowRoute.GET("/:id", middleware.Role([]string{"user", "admin"}), borrowController.BorrowDetails)
 
 	borrowRoute.Use(middleware.Role([]string{"admin"}))
 	borrowRoute.GET("/all", borrowController.GetBorrows)
-	borrowRoute.GET("/:id", borrowController.BorrowDetails)
 	borrowRoute.DELETE("/delete/:id", borrowController.DeleteBorrow)
 	borrowRoute.PUT("/approve/:id", borrowController.ApproveBookBorrowing)
 

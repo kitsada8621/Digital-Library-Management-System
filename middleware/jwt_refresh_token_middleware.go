@@ -3,7 +3,6 @@ package middleware
 import (
 	"dlms/models"
 	"dlms/services"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -25,7 +24,6 @@ func JwtRefreshAuth() gin.HandlerFunc {
 		}
 
 		parts := strings.Split(header, " ")
-		fmt.Println(parts)
 		if len(parts) != 2 || strings.ToLower(parts[0]) == "Bearer" {
 			ctx.JSON(http.StatusUnauthorized, models.ResponseJson{
 				Success: false,
